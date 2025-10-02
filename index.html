@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Kalender Menstruasi</title>
+    <script >
+          if (!localStorage.getItem("datapengguna")) {
+            // kalau tidak ada, redirect ke login.html
+            window.location.href = "login.html";
+        }
+
+    </script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #ffe6f0, #ffffff);
+            color: #333;
+        }
+        
+        /* Gaya untuk Navigasi Tahun */
+        .header-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .header-nav h1 {
+            margin: 0 30px;
+            color: #e75480;
+            font-size: 28px;
+        }
+        .header-nav button {
+            background: #ffe6f0;
+            color: #e75480;
+            border: 2px solid #e75480;
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        .header-nav button:hover {
+            background-color: #f7d4e3;
+        }
+
+        /* Gaya untuk Kontainer Kalender */
+        .calendar-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .month {
+            background: #fff;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            min-width: 250px; 
+        }
+        .month h2 {
+            text-align: center;
+            color: #e75480;
+            margin-bottom: 10px;
+        }
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            text-align: center;
+        }
+        .day {
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.2s, color 0.2s;
+            aspect-ratio: 1 / 1; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .inactive {
+            color: #aaa;
+            cursor: default;
+        }
+        /* Penandaan Haid (yang diinput awal dan yang diklik) */
+        .haid, .marked-haid { 
+            background-color: #e75480;
+            color: #fff;
+        }
+        /* Penandaan Prediksi */
+        .prediksi {
+            background-color: #b2f0c0;
+            color: #333;
+        }
+        @media (max-width: 1200px) {
+            .calendar-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        @media (max-width: 900px) {
+            .calendar-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 600px) {
+            .calendar-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header-nav">
+        <button onclick="changeYear(-1)">&lt;</button> 
+        <h1 id="currentYearTitle">Kalender Menstruasi 2025</h1>
+        <button onclick="changeYear(1)">&gt;</button>
+    </div>
+    <div class="calendar-container" id="calendar"></div>
+
+    <script>
+        const bulanNama = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        const dataPengguna = JSON.parse(localStorage.getItem('datapengguna')) || {};
+
+        let markedHaid = JSON.parse(localStorage.getItem('marked_haid')) || {};
+        const haid2 = dataPengguna.haid2;
+        const haid1 = dataPengguna.haid1;
+        
+        // PERUBAHAN UTAMA DI SINI: Durasi Haid 7 Hari
+        const durasiHaid = 7; 
+        
+        let currentYear = new Date().getFullYear(); 
+        if (currentYear < 2025) currentYear = 2025;
+        
+        document.getElementById('currentYearTitle').textContent = `Kalender Menstruasi ${currentYear}`;
+
+        // --- NAVIGASI TAHUN ---
+        function changeYear(offset) {
+            currentYear += offset;
+            document.getElementById('currentYearTitle').textContent = `Kalender Menstruasi ${currentYear}`;
+            renderCalendar();
+        }
+
+        // --- FUNGSI UTAMA TRACKING & PREDIKSI ---
+        
+        function saveMarkedHaid() {
+            localStorage.setItem('marked_haid', JSON.stringify(markedHaid));
+        }
+
+        function cleanUpMarkedHaid() {
+            let lastHaidDate = null;
+            
+            const markedKeys = Object.keys(markedHaid).sort();
+            if (markedKeys.length > 0) {
+                const lastMarkedKey = markedKeys[markedKeys.length - 1];
+                const parts = lastMarkedKey.split('-');
+                lastHaidDate = new Date(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
+            } 
+            
+            if (!lastHaidDate && haid1 && haid1 !== 'Tidak ingat') {
+                 lastHaidDate = new Date(haid1.akhir);
+            } else if (!lastHaidDate && haid2 && haid2 !== 'Tidak ingat') {
+                 lastHaidDate = new Date(haid2.akhir);
+            }
+            
+            if (lastHaidDate) {
+                let nextPrediksiStart = new Date(lastHaidDate);
+                nextPrediksiStart.setDate(nextPrediksiStart.getDate() + 24); 
+
+                const keysToDelete = Object.keys(markedHaid).filter(k => {
+                    const parts = k.split('-');
+                    const date = new Date(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
+                    return date > nextPrediksiStart;
+                });
+
+                keysToDelete.forEach(key => {
+                    delete markedHaid[key];
+                });
+                
+                saveMarkedHaid();
+            }
+        }
+
+        function handleDayClick(year, month, day, dayDiv) {
+            if (dayDiv.classList.contains('inactive')) return; 
+
+            const dateKey = `${year}-${month}-${day}`; 
+
+            if (dayDiv.classList.contains('marked-haid')) {
+                dayDiv.classList.remove('marked-haid');
+                delete markedHaid[dateKey];
+            } else {
+                dayDiv.classList.add('marked-haid');
+                markedHaid[dateKey] = true;
+            }
+
+            saveMarkedHaid();
+            cleanUpMarkedHaid(); 
+            renderCalendar(); 
+        }
+        
+        function getLastHaidEndDate(currentYear, currentMonth, currentDay) {
+            let lastHaidEnd = null;
+            const allEndDates = [];
+
+            const markedKeys = Object.keys(markedHaid).filter(k => {
+                const parts = k.split('-');
+                const date = new Date(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
+                const currentDate = new Date(currentYear, currentMonth, currentDay);
+                return date < currentDate;
+            }).sort();
+            
+            if (markedKeys.length > 0) {
+                const lastMarkedKey = markedKeys[markedKeys.length - 1];
+                const parts = lastMarkedKey.split('-');
+                allEndDates.push(new Date(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2])));
+            }
+
+            if (haid1 && haid1 !== 'Tidak ingat') {
+                 allEndDates.push(new Date(haid1.akhir));
+            }
+            if (haid2 && haid2 !== 'Tidak ingat') {
+                 allEndDates.push(new Date(haid2.akhir));
+            }
+            
+            if (allEndDates.length > 0) {
+                const mostRecentEndDate = allEndDates.sort((a, b) => b - a)[0];
+                const currentDate = new Date(currentYear, currentMonth, currentDay);
+                
+                if (mostRecentEndDate < currentDate) {
+                    lastHaidEnd = mostRecentEndDate;
+                }
+            }
+            
+            return lastHaidEnd;
+        }
+
+
+        // --- FUNGSI UTAMA KALENDER ---
+        
+        function buatKalender(bulan, tahun) {
+            const monthDiv = document.createElement('div');
+            monthDiv.classList.add('month');
+
+            const title = document.createElement('h2');
+            title.textContent = bulanNama[bulan] + ' ' + tahun;
+            monthDiv.appendChild(title);
+
+            const daysDiv = document.createElement('div');
+            daysDiv.classList.add('days');
+
+            const totalHari = new Date(tahun, bulan + 1, 0).getDate();
+
+            for (let d = 1; d <= totalHari; d++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('day');
+                dayDiv.textContent = d;
+                
+                const dateKey = `${tahun}-${bulan}-${d}`;
+
+                // 1. TANDAI HAID AWAL (Hanya 2025, Juli & Agustus)
+                if (tahun === 2025) {
+                    if (bulan === 6 && haid2 !== 'Tidak ingat') {
+                        const mulai = new Date(haid2.mulai);
+                        const akhir = new Date(haid2.akhir);
+                        const tglSekarang = new Date(tahun, bulan, d);
+                        if (tglSekarang >= mulai && tglSekarang <= akhir) {
+                            dayDiv.classList.add('haid');
+                        }
+                    }
+                    if (bulan === 7 && haid1 !== 'Tidak ingat') {
+                        const mulai = new Date(haid1.mulai);
+                        const akhir = new Date(haid1.akhir);
+                        const tglSekarang = new Date(tahun, bulan, d);
+                        if (tglSekarang >= mulai && tglSekarang <= akhir) {
+                            dayDiv.classList.add('haid');
+                        }
+                    }
+                }
+                
+                // 2. TANDAI HAID BARU OLEH PENGGUNA
+                if (markedHaid[dateKey]) {
+                    dayDiv.classList.add('marked-haid');
+                }
+
+                // 3. PREDISKI HAID (23 hari setelah selesai)
+                if (!dayDiv.classList.contains('haid') && !dayDiv.classList.contains('marked-haid')) {
+                    
+                    let lastHaidEnd = getLastHaidEndDate(tahun, bulan, d);
+
+                    if (lastHaidEnd) {
+                        
+                        let prediksiMulai = new Date(lastHaidEnd);
+                        prediksiMulai.setDate(prediksiMulai.getDate() + 24); 
+
+                        let prediksiAkhir = new Date(prediksiMulai);
+                        // Menggunakan durasiHaid yang baru (7 hari)
+                        prediksiAkhir.setDate(prediksiMulai.getDate() + (durasiHaid - 1)); 
+                        
+                        const tglSekarang = new Date(tahun, bulan, d);
+                        
+                        // Siklus penuh dihitung dengan durasiHaid yang baru
+                        const siklusPenuh = 24 + (durasiHaid - 1); 
+                        
+                        while (prediksiAkhir < tglSekarang) {
+                            prediksiMulai.setDate(prediksiMulai.getDate() + siklusPenuh);
+                            prediksiAkhir.setDate(prediksiMulai.getDate() + (durasiHaid - 1));
+                        }
+
+                        if (tglSekarang >= prediksiMulai && tglSekarang <= prediksiAkhir) 
+                        {
+                             dayDiv.classList.add('prediksi');
+                        }
+                    }
+                }
+                
+                // Tambahkan Event Listener untuk semua tanggal
+                dayDiv.addEventListener('click', () => {
+                    if (dayDiv.classList.contains('prediksi')) {
+                        dayDiv.classList.remove('prediksi');
+                    }
+                    
+                    handleDayClick(tahun, bulan, d, dayDiv);
+                });
+
+
+                daysDiv.appendChild(dayDiv);
+            }
+            
+            // Tambahkan tanggal kosong di akhir bulan
+            const lastDayOfWeek = (new Date(tahun, bulan, totalHari).getDay() === 0 ? 7 : new Date(tahun, bulan, totalHari).getDay());
+            const remainingDays = 7 - lastDayOfWeek;
+            
+            for (let i = 0; i < remainingDays; i++) {
+                 const empty = document.createElement('div');
+                 empty.classList.add('day', 'inactive');
+                 daysDiv.appendChild(empty);
+            }
+
+            monthDiv.appendChild(daysDiv);
+            return monthDiv;
+        }
+
+        const calendarDiv = document.getElementById('calendar');
+
+        function renderCalendar() {
+            calendarDiv.innerHTML = ''; 
+            cleanUpMarkedHaid(); 
+            
+            const startMonth = (currentYear === 2025) ? 6 : 0; 
+            const endMonth = 11; 
+
+            for (let m = startMonth; m <= endMonth; m++) {
+                calendarDiv.appendChild(buatKalender(m, currentYear));
+            }
+        }
+        
+        // Panggil saat pertama kali halaman dimuat
+        renderCalendar(); 
+    </script>
+</body>
+</html>
