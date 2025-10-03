@@ -1,0 +1,70 @@
+/* register_style.css */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #ffe6f0;
+  color: #333;
+}
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+.card {
+  background: #fff;
+  padding: 30px; 
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+h2 {
+  margin-bottom: 20px;
+  color: #e75480;
+}
+/* ATURAN DASAR: Lebar penuh, margin horizontal 0 (untuk HP) */
+input, select, button {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0; 
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 16px;
+}
+button {
+  background-color: #e75480;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #d13c67;
+}
+.hidden {
+  display: none;
+}
+/* --- MEDIA QUERIES (Solusi Kerapian) --- */
+
+/* 1. LAYAR KECIL (HP) */
+@media (max-width: 450px) {
+    .card {
+        padding: 30px 20px; 
+    }
+}
+
+/* 2. LAYAR BESAR (LAPTOP/DESKTOP) */
+@media (min-width: 451px) {
+    /* Mengembalikan padding card yang dikurangi di HP */
+    .card {
+        padding: 30px; 
+    }
+    
+    /* Mengaktifkan max-width dan rata tengah untuk laptop */
+    input, select, button {
+        max-width: 350px; 
+        margin: 10px auto; 
+        display: block; 
+    }
+}

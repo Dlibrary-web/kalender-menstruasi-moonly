@@ -3,62 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Cek Jadwal Haid</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #ffe6f0;
-      color: #333;
-    }
-    .container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
-    .card {
-      background: #fff;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-    }
-    h2 {
-      margin-bottom: 20px;
-      color: #e75480;
-    }
-    input, button {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      font-size: 16px;
-    }
-    button {
-      background-color: #e75480;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #d13c67;
-    }
-    p {
-      margin-top: 15px;
-      font-size: 14px;
-    }
-    a {
-      color: #e75480;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-  </style>
+  <title>Login - Moonly</title>
+  <link rel="stylesheet" href="login_style.css">
 </head>
 <body>
   <div class="container">
@@ -71,29 +17,6 @@
     </div>
   </div>
 
-  <script>
-    function loginUser() {
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
-      
-      const user = JSON.parse(localStorage.getItem('users'));
-       if (!localStorage.getItem("datapengguna")) {
-    // kalau tidak ada, redirect ke login.html
-    window.location.href = "login.html";
-  }
-      if (!user) {
-        alert('Belum ada data pengguna. Silakan daftar terlebih dahulu.');
-        return;
-      }
-
-      if (email === user.email && password === user.password) {
-        alert('Login berhasil! Selamat datang, ' + user.nama);
-        // Arahkan ke halaman dashboard / home
-        window.location.href = "index.html"; 
-      } else {
-        alert('Email atau password salah.');
-      }
-    }
-  </script>
+  <script src="login_script.js"></script>
 </body>
 </html>
