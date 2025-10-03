@@ -24,7 +24,17 @@ h2 {
   margin-bottom: 20px;
   color: #e75480;
 }
-/* ATURAN DASAR: Lebar penuh, margin horizontal 0 (untuk HP) */
+/* TAMBAHAN UNTUK MERAPIKAN LABEL TANGGAL */
+label {
+    display: block; 
+    margin-top: 15px;
+    margin-bottom: 5px;
+    text-align: left; /* Rata kiri */
+    color: #e75480; 
+    font-weight: bold;
+    padding: 0; /* Pastikan tidak ada padding aneh */
+}
+/* INPUT/BUTTONS */
 input, select, button {
   width: 100%;
   padding: 12px;
@@ -45,23 +55,22 @@ button:hover {
 .hidden {
   display: none;
 }
-/* --- MEDIA QUERIES (Solusi Kerapian) --- */
-
-/* 1. LAYAR KECIL (HP) */
+/* --- OPTIMASI KHUSUS LAYAR KECIL (HP) --- */
 @media (max-width: 450px) {
     .card {
+        /* Mengurangi padding horizontal agar input terlihat lebih penuh */
         padding: 30px 20px; 
     }
+    label {
+        /* Pastikan label juga menggunakan padding yang sama dengan card (jika perlu) */
+        padding: 0;
+    }
 }
-
-/* 2. LAYAR BESAR (LAPTOP/DESKTOP) */
+/* --- OPTIMASI KHUSUS LAYAR BESAR (LAPTOP) --- */
 @media (min-width: 451px) {
-    /* Mengembalikan padding card yang dikurangi di HP */
     .card {
         padding: 30px; 
     }
-    
-    /* Mengaktifkan max-width dan rata tengah untuk laptop */
     input, select, button {
         max-width: 350px; 
         margin: 10px auto; 

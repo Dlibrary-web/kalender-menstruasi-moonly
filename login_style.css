@@ -24,7 +24,7 @@ h2 {
   margin-bottom: 20px;
   color: #e75480;
 }
-/* ATURAN DASAR: Lebar penuh, margin horizontal 0 (untuk HP) */
+/* ATURAN DASAR (HP): Lebar penuh, margin horizontal 0 */
 input, button {
   width: 100%;
   padding: 12px;
@@ -64,15 +64,21 @@ a:hover {
 
 /* 2. LAYAR BESAR (LAPTOP/DESKTOP) */
 @media (min-width: 451px) {
-    /* Mengembalikan padding card yang dikurangi di HP */
     .card {
         padding: 30px; 
     }
     
-    /* Mengaktifkan max-width dan rata tengah untuk laptop */
+    /* Input dan Button akan dibatasi dan diratakan tengah */
     input, button {
         max-width: 350px; 
-        margin: 10px auto; 
+        margin: 10px auto; /* Kunci rata tengah */
         display: block; 
+    }
+    
+    /* Paragraf (teks 'Belum punya akun?') juga dibatasi dan diratakan tengah */
+    .card p {
+        max-width: 350px; /* Samakan lebar dengan input */
+        margin-left: auto;
+        margin-right: auto;
     }
 }
