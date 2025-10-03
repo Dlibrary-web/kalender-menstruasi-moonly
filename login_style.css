@@ -18,7 +18,11 @@ body {
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   width: 90%;
   max-width: 400px; 
-  text-align: center;
+  
+  /* PERBAIKAN: Gunakan Flexbox untuk meratakan semua konten di tengah */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* KUNCI UTAMA RATA TENGAH HORIZONTAL */
 }
 h2 {
   margin-bottom: 20px;
@@ -53,7 +57,7 @@ a {
 a:hover {
   text-decoration: underline;
 }
-/* --- MEDIA QUERIES (Solusi Kerapian) --- */
+/* --- MEDIA QUERIES --- */
 
 /* 1. LAYAR KECIL (HP) */
 @media (max-width: 450px) {
@@ -68,17 +72,14 @@ a:hover {
         padding: 30px; 
     }
     
-    /* Input dan Button akan dibatasi dan diratakan tengah */
+    /* Input dan Button hanya dibatasi lebarnya */
     input, button {
         max-width: 350px; 
-        margin: 10px auto; /* Kunci rata tengah */
-        display: block; 
+        margin: 10px 0; /* Margin nol horizontal */
     }
     
-    /* Paragraf (teks 'Belum punya akun?') juga dibatasi dan diratakan tengah */
+    /* Paragraf (teks 'Belum punya akun?') hanya dibatasi lebarnya */
     .card p {
-        max-width: 350px; /* Samakan lebar dengan input */
-        margin-left: auto;
-        margin-right: auto;
+        max-width: 350px; 
     }
 }

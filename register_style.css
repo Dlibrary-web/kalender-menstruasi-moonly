@@ -17,28 +17,33 @@ body {
   border-radius: 20px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   width: 90%;
-  max-width: 400px;
-  text-align: center;
+  max-width: 400px; 
+  
+  /* PERBAIKAN: Gunakan Flexbox untuk meratakan semua konten di tengah */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* KUNCI UTAMA RATA TENGAH HORIZONTAL */
 }
 h2 {
   margin-bottom: 20px;
   color: #e75480;
 }
-/* TAMBAHAN UNTUK MERAPIKAN LABEL TANGGAL */
+/* ATURAN UNTUK LABEL */
 label {
     display: block; 
     margin-top: 15px;
     margin-bottom: 5px;
-    text-align: left; /* Rata kiri */
+    text-align: left; /* Biarkan text-align: left agar label rata kiri dari input */
     color: #e75480; 
-    font-weight: bold;
-    padding: 0; /* Pastikan tidak ada padding aneh */
+    font-weight: normal;
+    width: 100%; /* Penting agar label menggunakan lebar penuh untuk sejajar dengan input */
 }
-/* INPUT/BUTTONS */
+
+/* ATURAN INPUT/SELECT/BUTTONS */
 input, select, button {
   width: 100%;
   padding: 12px;
-  margin: 10px 0; 
+  margin: 10px 0; /* Margin horizontal 0 */
   border: 1px solid #ccc;
   border-radius: 10px;
   font-size: 16px;
@@ -55,25 +60,25 @@ button:hover {
 .hidden {
   display: none;
 }
-/* --- OPTIMASI KHUSUS LAYAR KECIL (HP) --- */
+/* --- MEDIA QUERIES --- */
+
+/* 1. LAYAR KECIL (HP) */
 @media (max-width: 450px) {
     .card {
-        /* Mengurangi padding horizontal agar input terlihat lebih penuh */
         padding: 30px 20px; 
     }
-    label {
-        /* Pastikan label juga menggunakan padding yang sama dengan card (jika perlu) */
-        padding: 0;
-    }
 }
-/* --- OPTIMASI KHUSUS LAYAR BESAR (LAPTOP) --- */
+
+/* 2. LAYAR BESAR (LAPTOP/DESKTOP) */
 @media (min-width: 451px) {
     .card {
         padding: 30px; 
     }
-    input, select, button {
+    
+    /* Input, Select, Label, dan Button dibatasi lebarnya di desktop */
+    input, select, button, label {
         max-width: 350px; 
-        margin: 10px auto; 
-        display: block; 
+        margin-left: 0; /* Pastikan margin kiri/kanan diatur oleh align-items: center */
+        margin-right: 0;
     }
 }
